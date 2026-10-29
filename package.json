@@ -1,0 +1,35 @@
+{
+  "name": "vscode-wsl-action-buttons",
+  "displayName": "WSL Action Buttons",
+  "description": "Safe terminal paste and copy-all actions for VS Code WSL.",
+  "version": "0.1.0",
+  "publisher": "omaciasd",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "wslActionButtons.paste",
+        "title": "Pegar sin ejecutar",
+        "icon": "$(clippy)"
+      },
+      {
+        "command": "wslActionButtons.copyAll",
+        "title": "Copiar todo",
+        "icon": "$(copy)"
+      }
+    ]
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}
