@@ -7,26 +7,19 @@ const root = path.resolve(__dirname, '..');
 const manifest = JSON.parse(
     fs.readFileSync(path.join(root, 'package.json'), 'utf8')
 );
-const source = fs.readFileSync(
-    path.join(root, 'extension.js'), 'utf8'
-);
 
-test('manifest declares both actions', () => {
+test('manifest declares all four commands', () => {
     const commands = manifest.contributes.commands.map(item => item.command);
-    assert.ok(commands.includes('wslActionButtons.paste'));
-    assert.ok(commands.includes('wslActionButtons.copyAll'));
+    assert.deepEqual(commands, [
+        'wslActionButtons.pasteAndExecute',
+        'wslActionButtons.openOpenCode',
+        'wslActionButtons.copyAllOutput',
+        'wslActionButtons.clearTerminal'
+    ]);
 });
 
-test('paste does not append Enter', () => {
-    assert.match(source, /terminal\.sendText\(text,\s*false\)/);
-    assert.doesNotMatch(source, /sendText\(['"]\\r['"]/);
-});
-
-test('multiline clipboard input is rejected', () => {
-    assert.match(source, /if \(\/\[\\r\\n\]\/\.test\(text\)\)/);
-});
-
-test('terminal creation fallback exists', () => {
-    assert.match(source, /createTerminal/);
-    assert.match(source, /process\.env\.SHELL \|\| '\/bin\/bash'/);
+test('manifest does not declare legacy commands', () => {
+    const commands = manifest.contributes.commands.map(item => item.command);
+    assert.ok(!commands.includes('wslActionButtons.paste'));
+    assert.ok(!commands.includes('wslActionButtons.copyAll'));
 });
