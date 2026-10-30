@@ -2,13 +2,12 @@
 
 ## Paste behavior
 
-1. Reuse the named terminal or the active terminal.
-2. If neither exists, create a terminal using the configured WSL-side shell.
-3. Wait for the terminal process to be created.
+1. Reuse the active terminal when one exists.
+2. If none is active, create a terminal using VS Code's configured default
+   terminal profile.
+3. Show the terminal and wait for its shell process to become available.
 4. Read clipboard content and remove trailing line breaks.
-5. Reject embedded line breaks because interactive shells may execute
-   multiline input.
-6. Call `sendText(text, false)` so the extension does not append Enter.
+5. Call `sendText(content, true)` so the clipboard content is executed once.
 
 ## Copy behavior
 

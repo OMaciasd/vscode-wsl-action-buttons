@@ -1,28 +1,49 @@
 # WSL Action Buttons
 
-Standalone VS Code extension for terminal actions in WSL.
+Quick actions for the integrated VS Code terminal, designed for VS Code
+running in WSL.
 
-## Actions
+## Status bar actions
 
-- **Pegar:** opens or reuses a terminal and pastes a single-line clipboard
-  command without appending Enter. The command remains unexecuted.
-- **Copiar todo:** selects and copies the active terminal buffer.
+- **Pegar y ejecutar:** reads the clipboard and executes its content in the
+  active terminal. If no terminal is active, creates one using VS Code's
+  configured default terminal profile.
+- **Abrir OpenCode:** opens `opencode` in a dedicated terminal beside the
+  editor. Reuses that terminal while it remains open.
+- **Copiar output:** selects and copies the available terminal buffer using
+  VS Code's built-in terminal commands.
+- **Limpiar:** clears the active terminal using VS Code's built-in clear
+  command. It does not delete persistent shell history files.
 
-Multiline clipboard content is deliberately rejected to avoid accidentally
-executing commands in an interactive shell.
+## Requirements
+
+- VS Code 1.85 or later.
+- VS Code integrated terminal.
+- For OpenCode, the `opencode` executable must be available in the terminal's
+  `PATH`.
+
+## Notes
+
+Pegar y ejecutar intentionally executes clipboard content. Verify the
+clipboard before pressing the button, especially when it contains commands
+or multiline scripts.
+
+Copy output is limited to the terminal contents available in VS Code's
+scrollback buffer. It does not retrieve output that has already been discarded.
+
+The extension uses VS Code's configured default terminal profile when it
+creates a terminal; it does not force Bash or Zsh.
 
 ## Development
 
-Requirements: VS Code, Node.js and npm.
+Run tests:
 
-Run static tests:
+```bash
+npm test
+```
 
-    npm test
+Validate JavaScript syntax:
 
-This initial version needs manual validation in a VS Code WSL window.
-The tests do not simulate a real terminal or VS Code extension host.
-
-## Installation
-
-Package the extension as a VSIX using `@vscode/vsce`, then install the
-VSIX in the intended VS Code environment.
+```bash
+node --check extension.js
+```
