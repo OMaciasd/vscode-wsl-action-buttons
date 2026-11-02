@@ -1,7 +1,7 @@
 {
   "name": "vscode-wsl-action-buttons",
   "displayName": "WSL Action Buttons",
-  "description": "Quick terminal actions for VS Code and WSL: paste and execute, OpenCode, copy output and clear terminal.",
+  "description": "Quick terminal actions for VS Code and WSL: paste and execute, OpenCode, Ollama, copy output and clear terminal.",
   "version": "0.2.0",
   "publisher": "omaciasd",
   "license": "MIT",
@@ -22,22 +22,27 @@
     "commands": [
       {
         "command": "wslActionButtons.pasteAndExecute",
-        "title": "WSL Action Buttons: Pegar y ejecutar",
+        "title": "WSL Action Buttons: Paste and Execute Clipboard",
         "icon": "$(clippy)"
       },
       {
         "command": "wslActionButtons.openOpenCode",
-        "title": "WSL Action Buttons: Abrir OpenCode",
+        "title": "WSL Action Buttons: Open OpenCode",
         "icon": "$(terminal)"
       },
       {
+        "command": "wslActionButtons.openOllama",
+        "title": "WSL Action Buttons: Open Ollama",
+        "icon": "$(hubot)"
+      },
+      {
         "command": "wslActionButtons.copyAllOutput",
-        "title": "WSL Action Buttons: Copiar output",
+        "title": "WSL Action Buttons: Copy All Terminal Output",
         "icon": "$(copy)"
       },
       {
         "command": "wslActionButtons.clearTerminal",
-        "title": "WSL Action Buttons: Limpiar terminal",
+        "title": "WSL Action Buttons: Clear Terminal",
         "icon": "$(clear-all)"
       }
     ]

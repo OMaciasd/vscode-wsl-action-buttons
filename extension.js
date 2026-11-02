@@ -3,8 +3,10 @@
 const vscode = require('vscode');
 
 const OPENCODE_TERMINAL_NAME = 'OpenCode';
+const OLLAMA_TERMINAL_NAME = 'Ollama';
 
 let openCodeTerminal = null;
+let ollamaTerminal = null;
 let outputChannel = null;
 
 function log(message) {
@@ -198,6 +200,33 @@ async function openOpenCode() {
     }
 }
 
+async function openOllama() {
+    if (ollamaTerminal) {
+        ollamaTerminal.show(true);
+        return;
+    }
+
+    ollamaTerminal = vscode.window.createTerminal({
+        name: OLLAMA_TERMINAL_NAME,
+        location: {
+            viewColumn: vscode.ViewColumn.Beside,
+            preserveFocus: false
+        }
+    });
+
+    ollamaTerminal.show(false);
+
+    try {
+        await waitForTerminalProcess(ollamaTerminal);
+        ollamaTerminal.sendText('ollama run qwen3:8b-nothink', true);
+    } catch (error) {
+        vscode.window.showErrorMessage(
+            `Could not start Ollama: ${error.message}`
+        );
+        ollamaTerminal = null;
+    }
+}
+
 async function copyAllOutput() {
     const terminal = vscode.window.activeTerminal;
 
@@ -247,33 +276,40 @@ function activate(context) {
     const commands = [
         {
             id: 'wslActionButtons.pasteAndExecute',
-            title: 'Pegar y ejecutar',
+            title: 'Paste and Execute',
             icon: '$(clippy)',
-            tooltip: 'Pegar el portapapeles y ejecutar en la terminal activa; crear una si no hay ninguna'
+            tooltip: 'Paste clipboard content and execute it in the active terminal; create one if needed'
         },
         {
             id: 'wslActionButtons.openOpenCode',
-            title: 'Abrir OpenCode',
+            title: 'Open OpenCode',
             icon: '$(terminal)',
-            tooltip: 'Abrir OpenCode en una terminal dedicada junto al editor'
+            tooltip: 'Open OpenCode in a dedicated terminal beside the editor'
+        },
+        {
+            id: 'wslActionButtons.openOllama',
+            title: 'Open Ollama',
+            icon: '$(hubot)',
+            tooltip: 'Open Ollama with Qwen3 8B'
         },
         {
             id: 'wslActionButtons.copyAllOutput',
-            title: 'Copiar output',
+            title: 'Copy All Output',
             icon: '$(copy)',
-            tooltip: 'Seleccionar y copiar el output de la terminal activa'
+            tooltip: 'Select and copy the output from the active terminal'
         },
         {
             id: 'wslActionButtons.clearTerminal',
-            title: 'Limpiar',
+            title: 'Clear Terminal',
             icon: '$(clear-all)',
-            tooltip: 'Limpiar la pantalla y el búfer de la terminal activa'
+            tooltip: 'Clear the screen and buffer of the active terminal'
         }
     ];
 
     const handlers = {
         'wslActionButtons.pasteAndExecute': pasteAndExecute,
         'wslActionButtons.openOpenCode': openOpenCode,
+        'wslActionButtons.openOllama': openOllama,
         'wslActionButtons.copyAllOutput': copyAllOutput,
         'wslActionButtons.clearTerminal': clearTerminal
     };
@@ -284,7 +320,7 @@ function activate(context) {
             104 - index
         );
 
-        item.text = `${definition.icon} ${definition.title}`;
+        item.text = definition.icon;
         item.tooltip = definition.tooltip;
         item.command = definition.id;
         item.show();
@@ -305,12 +341,16 @@ function activate(context) {
             if (closed === openCodeTerminal) {
                 openCodeTerminal = null;
             }
+            if (closed === ollamaTerminal) {
+                ollamaTerminal = null;
+            }
         })
     );
 }
 
 function deactivate() {
     openCodeTerminal = null;
+    ollamaTerminal = null;
 }
 
 module.exports = {
@@ -318,6 +358,7 @@ module.exports = {
     deactivate,
     pasteAndExecute,
     openOpenCode,
+    openOllama,
     copyAllOutput,
     clearTerminal,
     normalizeClipboardContent
