@@ -34,3 +34,26 @@ The extension uses VS Code's configured default terminal profile; it does not fo
 ## Development
 
 Run tests with `npm test` and validate syntax with `node --check extension.js`.
+
+<!-- SUPPORT-LINKS -->
+## Support the Project
+
+If you find this extension useful, you can support its development and connect with me through the following channels:
+
+### Bre-B
+
+Scan the QR code to send a contribution using Bre-B.
+
+![Bre-B QR Code](assets/support/qr-bc-canal.png)
+
+### Connect on LinkedIn
+
+Scan the QR code to visit my LinkedIn profile and learn more about my professional work.
+
+![LinkedIn Profile QR Code](assets/support/freelance.png)
+
+### Support via PayPal
+
+If you would like to contribute financially, you can use the following PayPal link:
+
+[Support the project via PayPal](https://paypal.me/redesenservidores?locale.x=es_XC&country.x=CO)
