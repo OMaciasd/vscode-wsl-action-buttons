@@ -95,6 +95,8 @@ function harness({ activeTerminal = null, clipboard = 'echo hello' } = {}) {
         process,
         console,
         Promise,
+        setTimeout,
+        clearTimeout,
         Error
     });
 
@@ -115,11 +117,12 @@ function harness({ activeTerminal = null, clipboard = 'echo hello' } = {}) {
     };
 }
 
-test('manifest declares all four commands', () => {
+test('manifest declares all five commands', () => {
     const ids = manifest.contributes.commands.map(item => item.command);
     assert.deepEqual(ids, [
         'wslActionButtons.pasteAndExecute',
         'wslActionButtons.openOpenCode',
+        'wslActionButtons.openOllama',
         'wslActionButtons.copyAllOutput',
         'wslActionButtons.clearTerminal'
     ]);
@@ -189,6 +192,19 @@ test('empty clipboard does not create a terminal', async () => {
 
     assert.equal(h.terminals.length, 0);
     assert.equal(h.infos.length, 2);
+});
+
+test('Ollama opens a dedicated terminal beside the editor with Qwen3', async () => {
+    const h = harness();
+    await h.api.openOllama();
+
+    assert.equal(h.terminals.length, 1);
+    assert.equal(h.terminals[0].name, 'Ollama');
+    assert.equal(h.terminals[0].options.location.viewColumn, -2);
+    assert.equal(h.terminals[0].options.location.preserveFocus, false);
+    assert.deepEqual(h.terminals[0].sent, [
+        { text: 'ollama run qwen3:8b-nothink', addNewLine: true }
+    ]);
 });
 
 test('OpenCode opens a dedicated terminal beside the editor', async () => {
@@ -296,4 +312,48 @@ test('paste reuses the active terminal instead of creating one', async () => {
     assert.equal(h.terminals.length, 0);
     assert.deepEqual(active.sent, [{ text: 'pwd', addNewLine: true }]);
     assert.deepEqual(active.shown, [true]);
+});
+
+test('status bar exposes exactly five icon-only buttons with English tooltips', () => {
+    const h = harness();
+    assert.equal(h.statusItems.length, 5);
+    assert.deepEqual(
+        h.statusItems.map(item => ({
+            text: item.text,
+            tooltip: item.tooltip,
+            command: item.command
+        })),
+        [
+            {
+                text: '$(clippy)',
+                tooltip: 'Paste clipboard content and execute it in the active terminal; create one if needed',
+                command: 'wslActionButtons.pasteAndExecute'
+            },
+            {
+                text: '$(terminal)',
+                tooltip: 'Open OpenCode in a dedicated terminal beside the editor',
+                command: 'wslActionButtons.openOpenCode'
+            },
+            {
+                text: '$(hubot)',
+                tooltip: 'Open Ollama with Qwen3 8B',
+                command: 'wslActionButtons.openOllama'
+            },
+            {
+                text: '$(copy)',
+                tooltip: 'Select and copy the output from the active terminal',
+                command: 'wslActionButtons.copyAllOutput'
+            },
+            {
+                text: '$(clear-all)',
+                tooltip: 'Clear the screen and buffer of the active terminal',
+                command: 'wslActionButtons.clearTerminal'
+            }
+        ]
+    );
+    for (const item of h.statusItems) {
+        assert.ok(item.text.startsWith('$('), `Expected icon-only text: ${item.text}`);
+        assert.ok(!item.text.includes(' '), `Unexpected label: ${item.text}`);
+        assert.ok(item.tooltip.length > 0);
+    }
 });
